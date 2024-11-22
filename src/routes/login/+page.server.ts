@@ -20,7 +20,7 @@ export const actions: Actions = {
 				maxAge: one_hour,
 			});
 
-			throw redirect(303, "/personal");
+			throw redirect(303, "/home");
 		}
 		return fail(401, { password_correct });
 	},

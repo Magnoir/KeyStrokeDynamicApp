@@ -3,7 +3,7 @@
     import Nav from "$lib/Nav.svelte";
 </script>
 <svelte:head>
-	<title>Key Stroke Dynamics Test App</title>
+	<title>Key Stroke Dynamics Tests</title>
 </svelte:head>
 
 <Nav />

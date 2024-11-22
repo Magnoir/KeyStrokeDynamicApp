@@ -1,8 +1,8 @@
-import type { Actions } from "./$types";
 import { ref, set, get } from "firebase/database";
 import { db } from "$lib/firebase";
 
-export const actions: Actions = {
+/** @type {import('./$types').Actions} */
+export const actions = {
     default: async ({ request }: { request: Request }) => {
         const formData = await request.formData();
         const username = formData.get("username");
