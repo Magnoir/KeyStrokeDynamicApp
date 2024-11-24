@@ -14,10 +14,10 @@
     let isPasswordValid = false;
 
     function checkPasswords1() {
-        passwordsMatch1 = password === password1 && password1 !== "";
+        passwordsMatch1 = password === password1 && password1 !== "" && password1.length >= 8;
     }
 	function checkPasswords2() {
-        passwordsMatch2 = password === password2 && password2 !== "";
+        passwordsMatch2 = password === password2 && password2 !== "" && password2.length >= 8;
     }
 
     function checkPasswordValidity() {

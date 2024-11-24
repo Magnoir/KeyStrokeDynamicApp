@@ -44,9 +44,33 @@
 			parsedData = records;
 		}
 	});
+
+	function downloadJSON() {
+		const recordsWithParsedKeyData = parsedData.map((record, index) => {
+			if (record.keyData) {
+				try {
+					const parsedKeyData = JSON.parse(record.keyData);
+					return { ...record, keyData: parsedKeyData };
+				} catch (e) {
+					error = "Error parsing JSON data.";
+					return record;
+				}
+			}
+			return record;
+		});
+
+		const json = JSON.stringify(recordsWithParsedKeyData, null, 2);
+		const blob = new Blob([json], { type: 'application/json' });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'data.json';
+		link.click();
+	}
+
   </script>
   
   <div class="container mt-4">
+	<button class="btn btn-primary mb-4 d-block mx-auto" on:click={downloadJSON}>Download Data as JSON</button>
 	<h1 class="mb-4">Firebase Database</h1>
 	{#if error}
 	  <div class="alert alert-danger">{error}</div>
