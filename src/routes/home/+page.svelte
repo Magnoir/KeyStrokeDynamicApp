@@ -6,12 +6,14 @@
 
     let errorMessage: string = "";
     let successMessage: string = "";
+    let username = "";
     let password = "";
     let password1 = "";
     let password2 = "";
     let passwordsMatch1 = false;
 	let passwordsMatch2 = false;
     let isPasswordValid = false;
+    let isUsernameValid = false;
 
     function checkPasswords1() {
         passwordsMatch1 = password === password1 && password1 !== "" && password1.length >= 8;
@@ -24,21 +26,24 @@
         isPasswordValid = password.length >= 8;
     }
 
+    function checkUsernameValidity() {
+        isUsernameValid = username !== "";
+    }
+
     $: {
         checkPasswords1();
 		checkPasswords2();
         checkPasswordValidity();
+        checkUsernameValidity();
     }
 
     let keyData: Record<string, any[]> = {
-        username: [],
         password: [],
         password1: [],
         password2: []
     };
 
     let startTimes: Record<string, number> = {
-        username: 0,
         password: 0,
         password1: 0,
         password2: 0
@@ -61,10 +66,7 @@
         }
 
         const existingKey = keyData[field].find((key) => key.key === event.key && key.keyUpTime === null);
-        if (existingKey) {
-            console.warn(`KeyDown event received for ${event.key}, but it is already pressed.`);
-            return;
-        }
+        if (existingKey) return;
 
         if (startTimes[field] === 0) startTimes[field] = currentTime;
 
@@ -92,8 +94,6 @@
             lastKey.keyUpTime = parseFloat(((currentTime - startTimes[field]) / 1000).toFixed(6));
             lastKey.keyUpTimestamp = currentTime;
             lastKey.durationInSeconds = parseFloat((lastKey.keyUpTime - lastKey.keyDownTime).toFixed(6));
-        } else {
-            console.warn(`KeyUp event received for ${event.key}, but no corresponding KeyDown event was found.`);
         }
     }
 
@@ -105,12 +105,11 @@
         hiddenInput.name = 'keyData';
         hiddenInput.value = JSON.stringify(keyData);
         form.appendChild(hiddenInput);
-
         form.submit();
     }
 
     onMount(() => {
-        const fields = ['username', 'password', 'password1', 'password2'];
+        const fields = ['password', 'password1', 'password2'];
         fields.forEach((field) => {
             const element = document.getElementById(field) as HTMLInputElement;
             if (element) {
@@ -123,11 +122,15 @@
 
 
 <div class="container p-3 mx-auto" style="max-width: 400px;">
-    <form method="POST" on:submit={handleSubmit} use:enhance>
+    <form method="POST" on:submit={handleSubmit}>
         <div class="mb-3">
-            <label for="username" class="form-label">Username</label>
-            <input type="text" minlength="5" autocomplete="off" class="form-control" id="username" name="username" required aria-describedby="usernameHelp">
-            <div id="usernameHelp" class="form-text">Username must be at least 5 characters long.</div>
+            <select class="form-select" aria-label="Default select example" name="username" id="username" required bind:value={username}
+            class:is-valid={isUsernameValid} class:is-invalid={!isUsernameValid} on:change={checkUsernameValidity}>
+                <option selected disabled value="">Choose your username</option>
+                <option value="gustave">Gustave</option>
+                <option value="romain">Romain</option>
+                <option value="james">James</option>
+            </select>
         </div>
         <h5 class="text-center">All passwords must be identical.</h5>
         <div class="mb-3">

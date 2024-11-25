@@ -11,13 +11,13 @@ export async function POST({ request, cookies }: RequestEvent) {
 			return json({ error: "Unauthorized" }, { status: 401 });
 		}
 
-		const { id } = await request.json();
+		const { id, username } = await request.json();
 
 		if (!id) {
 			return json({ error: "Missing ID" }, { status: 400 });
 		}
 
-		const recordRef = ref(db, `users/${id}`);
+		const recordRef = ref(db, `users/${username}/${id}`);
 		await remove(recordRef);
 
 		return json({ success: true }, { status: 200 });
