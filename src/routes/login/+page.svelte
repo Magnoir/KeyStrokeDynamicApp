@@ -14,7 +14,7 @@
 			<label for="password" class="form-label">Password</label>
 			<input type="password" class="form-control" id="password" name="password">
 		</div>
-		<button type="submit" class="btn btn-primary mb-3 d-block mx-auto">Submit</button>
+		<button type="submit" class="btn btn-primary mb-3 d-block mx-auto">Log In</button>
 	</form>
 	{#if form && !form.password_correct}
 		<p class="text-center text-danger">The username or the password is not correct.</p>
