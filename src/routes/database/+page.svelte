@@ -97,7 +97,8 @@
 			<div class="card mb-4">
 				<div class="card-header d-flex justify-content-between align-items-center">
 					<div>
-						<strong>Username:</strong> {group[0].username}
+						<strong>Username:</strong> {group[0].username} |
+						<strong>Number of records:</strong> {group.length}
 					</div>
 					<div>
 						<button
