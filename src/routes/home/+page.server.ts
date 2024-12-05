@@ -1,5 +1,6 @@
 import { ref, set } from "firebase/database";
 import { db } from "$lib/firebase";
+import { get_current_user } from "../../db/session";
 
 /** @type {import('./$types').Actions} */
 export const actions = {
@@ -17,4 +18,10 @@ export const actions = {
             return { error: (error as any).message };
         }
     },
+};
+
+/** @type {import('./$types').PageServerLoad} */
+export const load = async ({ cookies }: { cookies: any }) => {
+    const username = await get_current_user(cookies.get("session_id"));
+    return { props: { username } };
 };

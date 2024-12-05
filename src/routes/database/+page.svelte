@@ -18,6 +18,8 @@
 		password1?: string;
 		password2?: string;
 		username?: string;
+		floatingTextarea1?: string;
+		floatingTextarea2?: string;
 	}
 
 	let parsedData: Record[] = [];
@@ -119,9 +121,17 @@
 								<div class="card-header d-flex justify-content-between align-items-center">
 									<div>
 										<strong>ID:</strong> {record.id} |
+										{#if record.password}
 										<strong>Password:</strong> {record.password} |
 										<strong>Password 1:</strong> {record.password1} |
 										<strong>Password 2:</strong> {record.password2}
+										{/if}
+										{#if record.floatingTextarea1}
+										<strong>Textarea 1:</strong> {record.floatingTextarea1.slice(0, 50)} ...
+										{/if}
+										{#if record.floatingTextarea2}
+										<strong>Textarea 2:</strong> {record.floatingTextarea2.slice(0, 50)} ...
+										{/if}
 									</div>
 									<div>
 										<button

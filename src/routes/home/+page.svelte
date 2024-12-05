@@ -1,8 +1,42 @@
 <script lang="ts">
-    import { enhance } from "$app/forms";
     import { onMount } from "svelte";
 
     export const form: any = {};
+    export let data;
+    
+    const text = "La frappologie est l'art de manipuler les mots, de jouer avec leur "  + 
+    "sonorité et leur rythme pour créer des effets comiques, rythmiques ou poétiques. " +
+    "C'est une exploration ludique et créative du langage, où la répétition, les allitérations " +
+    "et les assonances se mêlent pour offrir des morceaux de textes rythmés et amusants.";
+    
+    const mots: string[] = [
+        "Arbre", "Océan", "Lumière", "Montagne", "Etoile",
+        "Papillon", "Nuance", "Harmonie", "Couleur", "Miroir",
+        "Éclat", "Douceur", "Voyage", "Rivière", "Pluie",
+        "Rêve", "Lune", "Musique", "Parfum", "Sable",
+        "Ciel", "Forêt", "Liberté", "Ecriture", "Sérénité",
+        "Feuille", "Chant", "Légende", "Bonté", "Mystère",
+        "Espoir", "Evasion", "Monstre", "Mémoire", "Oiseau",
+        "Reflet", "Poème", "Savoir", "Arôme", "Ombre",
+        "Cascade", "Tempête", "Parole", "Diamant", "Flamme",
+        "Rire", "Espièglerie", "Danse", "Cri", "Aube"
+    ];
+
+    function genererTexteAleatoireUnique(mots: string[], longueur: number): string {
+        const motsMélangés = [...mots].sort(() => Math.random() - 0.5);
+        
+        const motsUniquement = motsMélangés.slice(0, longueur);
+
+        return motsUniquement.join(' ');
+    }
+
+    const texteAleatoireUnique = genererTexteAleatoireUnique(mots, 50);
+
+    let textarea1 = "";
+    let textarea2 = "";
+
+    let textarea1Valid = false;
+    let textarea2Valid = false;
 
     let errorMessage: string = "";
     let successMessage: string = "";
@@ -30,23 +64,57 @@
         isUsernameValid = username !== "";
     }
 
+    function checkTextarea1() {
+        let i = 0;
+        let isProgressingCorrectly = true;
+
+        while (i < text.length && i < textarea1.length) {
+            if (text[i] !== textarea1[i]) {
+                isProgressingCorrectly = false;
+                break;
+            }
+            i++;
+        }
+        textarea1Valid = isProgressingCorrectly && textarea1.length !== 0;
+    }
+
+    function checkTextarea2() {
+        let i = 0;
+        let isProgressingCorrectly = true;
+
+        while (i < texteAleatoireUnique.length && i < textarea2.length) {
+            if (texteAleatoireUnique[i] !== textarea2[i]) {
+                isProgressingCorrectly = false;
+                break;
+            }
+            i++;
+        }
+        textarea2Valid = isProgressingCorrectly && textarea2.length !== 0;
+    }
+
     $: {
         checkPasswords1();
 		checkPasswords2();
         checkPasswordValidity();
         checkUsernameValidity();
+        checkTextarea1();
+        checkTextarea2();
     }
 
     let keyData: Record<string, any[]> = {
         password: [],
         password1: [],
-        password2: []
+        password2: [],
+        floatingTextarea1: [],
+        floatingTextarea2: []
     };
 
     let startTimes: Record<string, number> = {
         password: 0,
         password1: 0,
-        password2: 0
+        password2: 0,
+        floatingTextarea1: 0,
+        floatingTextarea2: 0
     };
 
     function handleKeyDown(event: KeyboardEvent, field: string) {
@@ -100,16 +168,21 @@
     function handleSubmit(event: SubmitEvent) {
         event.preventDefault();
         const form = event.target as HTMLFormElement;
-        const hiddenInput = document.createElement('input');
-        hiddenInput.type = 'hidden';
-        hiddenInput.name = 'keyData';
-        hiddenInput.value = JSON.stringify(keyData);
-        form.appendChild(hiddenInput);
+        const hiddenKeyDataInput = document.createElement('input');
+        hiddenKeyDataInput.type = 'hidden';
+        hiddenKeyDataInput.name = 'keyData';
+        hiddenKeyDataInput.value = JSON.stringify(keyData);
+        form.appendChild(hiddenKeyDataInput);
+        const hiddenUsernameInput = document.createElement('input');
+        hiddenUsernameInput.type = 'hidden';
+        hiddenUsernameInput.name = 'username';
+        hiddenUsernameInput.value = JSON.stringify(data.props.username);
+        form.appendChild(hiddenUsernameInput);
         form.submit();
     }
 
     onMount(() => {
-        const fields = ['password', 'password1', 'password2'];
+        const fields = ['password', 'password1', 'password2', 'floatingTextarea1', 'floatingTextarea2'];
         fields.forEach((field) => {
             const element = document.getElementById(field) as HTMLInputElement;
             if (element) {
@@ -121,38 +194,60 @@
 </script>
 
 
-<div class="container p-3 mx-auto" style="max-width: 400px;">
-    <form method="POST" on:submit={handleSubmit}>
-        <div class="mb-3">
-            <select class="form-select" aria-label="Default select example" name="username" id="username" required bind:value={username}
-            class:is-valid={isUsernameValid} class:is-invalid={!isUsernameValid} on:change={checkUsernameValidity}>
-                <option selected disabled value="">Choose your username</option>
-                <option value="gustave">Gustave</option>
-                <option value="romain">Romain</option>
-                <option value="james">James</option>
-            </select>
+<div class="container p-3 mx-auto">
+    <div class="card mb-1 text-center">
+        <div class="card-body">
+            <h5 class="card-title">Username  : <span class="card-text fw-bold">{data.props.username}</span></h5>
         </div>
-        <h5 class="text-center">All passwords must be identical.</h5>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password (first time)</label>
-            <input type="password" minlength="8" autocomplete="off" class="form-control" id="password" name="password" bind:value={password}
-            required aria-describedby="passwordHelp" class:is-valid={isPasswordValid} class:is-invalid={!isPasswordValid} on:input={checkPasswordValidity}>
-            <div id="passwordHelp" class="form-text">Password must be at least 8 characters long.</div>
-        </div>
-        <div class="mb-3">
-			<label for="password1" class="form-label">Password (second time)</label>
-			<input type="password" minlength="8" autocomplete="off" class="form-control" id="password1" name="password1" bind:value={password1}
-			required aria-describedby="password1Help" class:is-valid={passwordsMatch1} class:is-invalid={!passwordsMatch1} on:input={checkPasswords1}>
-			<div id="password1Help" class="form-text">Password must be at least 8 characters long.</div>
-		</div>
-		<div class="mb-3">
-			<label for="password2" class="form-label">Password (third time)</label>
-			<input type="password" minlength="8" autocomplete="off" class="form-control" id="password2" name="password2" bind:value={password2}
-			required aria-describedby="password2Help" class:is-valid={passwordsMatch2} class:is-invalid={!passwordsMatch2} on:input={checkPasswords2}>
-			<div id="password2Help" class="form-text">Password must be at least 8 characters long.</div>
-		</div>		
-        <button type="submit" class="btn btn-primary mb-3 d-block mx-auto" disabled={!passwordsMatch1 || !passwordsMatch2 || !isPasswordValid}>Sign up</button>
-    </form>
+    </div>
+    <div class="card mb-1">
+        <form method="POST" on:submit={handleSubmit}>
+            <div class="card-body">
+                <h3 class="text-center">I) First test : all passwords must be identical</h3>
+                <label for="password" class="form-label">Password (first time)</label>
+                <input type="password" minlength="8" autocomplete="off" class="form-control" id="password" name="password" bind:value={password}
+                required aria-describedby="passwordHelp" class:is-valid={isPasswordValid} class:is-invalid={!isPasswordValid} on:input={checkPasswordValidity}>
+                <div id="passwordHelp" class="form-text">Password must be at least 8 characters long.</div>
+                <label for="password1" class="form-label">Password (second time)</label>
+                <input type="password" minlength="8" autocomplete="off" class="form-control" id="password1" name="password1" bind:value={password1}
+                required aria-describedby="password1Help" class:is-valid={passwordsMatch1} class:is-invalid={!passwordsMatch1} on:input={checkPasswords1}>
+                <div id="password1Help" class="form-text">Password must be at least 8 characters long.</div>
+                <label for="password2" class="form-label">Password (third time)</label>
+                <input type="password" minlength="8" autocomplete="off" class="form-control" id="password2" name="password2" bind:value={password2}
+                required aria-describedby="password2Help" class:is-valid={passwordsMatch2} class:is-invalid={!passwordsMatch2} on:input={checkPasswords2}>
+                <div id="password2Help" class="form-text">Password must be at least 8 characters long.</div>
+                <button type="submit" class="btn btn-primary mb-1 d-block mx-auto" disabled={!passwordsMatch1 || !passwordsMatch2 || !isPasswordValid}>Submit</button>
+            </div> 
+        </form>
+    </div>
+    <div class="card mb-1">
+        <form method="POST" on:submit={handleSubmit}>
+            <div class="card-body">
+                <h3 class="text-center">II) Second test : the text must be copied identically</h3>
+                <h6 class="text-center">"{text}"</h6>
+                <div class="form-floating mb-3">
+                    <textarea minlength="8" rows="8" autocomplete="off" class="form-control" id="floatingTextarea1" name="floatingTextarea1" bind:value={textarea1}
+                    required class:is-valid={textarea1Valid} class:is-invalid={!textarea1Valid} on:input={checkTextarea1} style="height:100%;"></textarea>
+                    <label for="floatingTextarea1">Comments</label>
+                </div>
+                <button type="submit" class="btn btn-primary mb-1 d-block mx-auto" disabled={!textarea1Valid || textarea1.length !== text.length}>Submit</button>
+            </div> 
+        </form>
+    </div>
+    <div class="card mb-1">
+        <form method="POST" on:submit={handleSubmit}>
+            <div class="card-body">
+                <h3 class="text-center">III) Third test : the text must be copied identically</h3>
+                <h6 class="text-center">"{texteAleatoireUnique}"</h6>
+                <div class="form-floating mb-3">
+                    <textarea minlength="8" rows="8" autocomplete="off" class="form-control" id="floatingTextarea2" name="floatingTextarea2" bind:value={textarea2}
+                    required class:is-valid={textarea2Valid} class:is-invalid={!textarea2Valid} on:input={checkTextarea2} style="height:100%;"></textarea>
+                    <label for="floatingTextarea2">Comments</label>
+                </div>
+                <button type="submit" class="btn btn-primary mb-1 d-block mx-auto" disabled={!textarea2Valid || textarea2.length !== texteAleatoireUnique.length}>Submit</button>
+            </div> 
+        </form>
+    </div>
     {#if errorMessage}
         <p class="text-danger">{errorMessage}</p>
     {/if}
