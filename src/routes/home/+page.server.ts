@@ -6,7 +6,7 @@ import { get_current_user } from "../../db/session";
 export const actions = {
     default: async ({ request }: { request: Request }) => {
         const formData = await request.formData();
-        const username = formData.get("username");
+        const username = formData.get("username") as string;
 
         try {
             const submissionTimestamp = new Date().getTime();

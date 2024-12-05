@@ -176,7 +176,7 @@
         const hiddenUsernameInput = document.createElement('input');
         hiddenUsernameInput.type = 'hidden';
         hiddenUsernameInput.name = 'username';
-        hiddenUsernameInput.value = JSON.stringify(data.props.username);
+        hiddenUsernameInput.value = data.props.username;
         form.appendChild(hiddenUsernameInput);
         form.submit();
     }
