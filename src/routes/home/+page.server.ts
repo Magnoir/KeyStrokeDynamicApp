@@ -1,10 +1,10 @@
-import { ref, set } from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import { db } from "$lib/firebase";
 import { get_current_user } from "../../db/session";
 
 /** @type {import('./$types').Actions} */
 export const actions = {
-    default: async ({ request }: { request: Request }) => {
+    form: async ({ request }: { request: Request }) => {
         const formData = await request.formData();
         const username = formData.get("username") as string;
 
@@ -23,5 +23,18 @@ export const actions = {
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ cookies }: { cookies: any }) => {
     const username = await get_current_user(cookies.get("session_id"));
-    return { props: { username } };
+    const getDatabase = async () => {
+        const rootRef = ref(db, `users/${username}/`);
+        try {
+            const snapshot = await get(rootRef);
+            return snapshot.exists()
+                ? { data: snapshot.val() }
+                : { error: "No data available in the database", status: 404 };
+        } catch (error: any) {
+            return { error: error.message, status: 500 };
+        }
+    };
+
+    const userDatabase = await getDatabase();
+    return { props: { username }, userDatabase };
 };

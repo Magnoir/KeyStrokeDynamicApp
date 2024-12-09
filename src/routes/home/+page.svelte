@@ -3,7 +3,7 @@
 
     export const form: any = {};
     export let data;
-    
+
     const text = "La frappologie est l'art de manipuler les mots, de jouer avec leur "  + 
     "sonorité et leur rythme pour créer des effets comiques, rythmiques ou poétiques. " +
     "C'est une exploration ludique et créative du langage, où la répétition, les allitérations " +
@@ -31,6 +31,10 @@
     }
 
     const texteAleatoireUnique = genererTexteAleatoireUnique(mots, 50);
+
+    let passwordcounter = 0;
+    let textarea1counter = 0;
+    let textarea2counter = 0;
 
     let textarea1 = "";
     let textarea2 = "";
@@ -190,6 +194,18 @@
                 element.addEventListener('keyup', (event) => handleKeyUp(event, field));
             }
         });
+
+        for (const key in data.userDatabase.data) {
+            const element = data.userDatabase.data[key];
+            if (element.password) {
+                passwordcounter++;
+            } else if (element.floatingTextarea1) {
+                textarea1counter++;
+            } else if (element.floatingTextarea2) {
+                textarea2counter++;
+            }
+        }
+
     });
 </script>
 
@@ -197,11 +213,25 @@
 <div class="container p-3 mx-auto">
     <div class="card mb-1 text-center">
         <div class="card-body">
-            <h5 class="card-title">Username  : <span class="card-text fw-bold">{data.props.username}</span></h5>
+            <h5 class="card-title">Username: <span class="fw-bold">{data.props.username}</span></h5>
+            <div class="row">
+                <div class="col-md-4">
+                    <span class="d-block">I) Attempts Count:</span>
+                    <span class="badge bg-primary">{passwordcounter}</span>
+                </div>
+                <div class="col-md-4">
+                    <span class="d-block">II) Attempts Count:</span>
+                    <span class="badge bg-success">{textarea1counter}</span>
+                </div>
+                <div class="col-md-4">
+                    <span class="d-block">III) Attempts Count:</span>
+                    <span class="badge bg-warning">{textarea2counter}</span>
+                </div>
+            </div>
         </div>
     </div>
     <div class="card mb-1">
-        <form method="POST" on:submit={handleSubmit}>
+        <form method="POST" on:submit={handleSubmit} action="?/form">
             <div class="card-body">
                 <h3 class="text-center">I) First test : all passwords must be identical</h3>
                 <label for="password" class="form-label">Password (first time)</label>
@@ -221,7 +251,7 @@
         </form>
     </div>
     <div class="card mb-1">
-        <form method="POST" on:submit={handleSubmit}>
+        <form method="POST" on:submit={handleSubmit} action="?/form">
             <div class="card-body">
                 <h3 class="text-center">II) Second test : the text must be copied identically</h3>
                 <h6 class="text-center">"{text}"</h6>
@@ -235,7 +265,7 @@
         </form>
     </div>
     <div class="card mb-1">
-        <form method="POST" on:submit={handleSubmit}>
+        <form method="POST" on:submit={handleSubmit} action="?/form">
             <div class="card-body">
                 <h3 class="text-center">III) Third test : the text must be copied identically</h3>
                 <h6 class="text-center">"{texteAleatoireUnique}"</h6>

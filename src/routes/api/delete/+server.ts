@@ -7,7 +7,7 @@ import type { RequestEvent } from "@sveltejs/kit";
 export async function POST({ request, cookies }: RequestEvent) {
 	try {
 		const session_id = cookies.get("session_id");
-		if (!session_id || !has_session(session_id)) {
+		if (!session_id || !(await has_session(session_id))) {
 			return json({ error: "Unauthorized" }, { status: 401 });
 		}
 

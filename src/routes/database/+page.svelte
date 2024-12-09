@@ -38,7 +38,6 @@
 			);
 			parsedData = records;
 			groupedData = groupByUsername(parsedData);
-			console.log(groupedData);
 		}
 	});
 
@@ -77,6 +76,21 @@
 	}
 
 	function downloadJSON() {
+		let downloadData : any = parsedData;
+		downloadData.forEach((record: any) => {
+			if (record.floatingTextarea1){
+				delete record.keyData.floatingTextarea2;
+				delete record.keyData.password;
+				delete record.keyData.password1;
+				delete record.keyData.password2;
+			}
+			if (record.floatingTextarea2){
+				delete record.keyData.floatingTextarea1;
+				delete record.keyData.password;
+				delete record.keyData.password1;
+				delete record.keyData.password2;
+			}
+		});
 		const json = JSON.stringify(parsedData, null, 2);
 		const blob = new Blob([json], { type: 'application/json' });
 		const link = document.createElement('a');

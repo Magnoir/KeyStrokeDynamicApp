@@ -3,7 +3,7 @@ import { ref, get } from "firebase/database";
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ parent }: { parent: () => Promise<void> }) => {
-     await parent();
+    await parent();
 
     const getDatabase = async () => {
         const rootRef = ref(db, "users/");
