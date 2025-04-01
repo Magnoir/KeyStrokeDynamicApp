@@ -46,7 +46,6 @@ export const actions: Actions = {
 		try {
 			const userData = ref(db, `signup/${username}`);
 			await set(userData, JSON.parse(keyData));
-
 		} catch (error: unknown) {
 			if (error instanceof Error) {
 				console.error('Error fetching Firebase data:', error.message);
