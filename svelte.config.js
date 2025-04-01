@@ -1,4 +1,4 @@
-import adapter from "svelte-adapter-bun";
+import adapter from '@sveltejs/adapter-auto';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -14,8 +14,8 @@ const config = {
 		adapter: adapter()
 	},
 	build: {
-		outDir: './build',
-		emptyOutDir: true, // also necessary
+		outDir: '../dist',
+		emptyOutDir: true // also necessary
 	}
 };
 

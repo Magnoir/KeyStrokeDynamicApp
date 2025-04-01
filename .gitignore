@@ -1,10 +1,9 @@
-/node_modules
-
+node_modules
+.history/
+.svelte-kit/
 # Output
 .output
 .vercel
-.netlify
-.wrangler
 /.svelte-kit
 /build
 
