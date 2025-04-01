@@ -6,7 +6,7 @@
 	import { deserialize } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
 
-	let form : ActionData = $props()
+	let form: ActionData = $props();
 
 	let password1 = $state('');
 	let password2 = $state('');
@@ -17,10 +17,10 @@
 
 	$effect(() => {
 		isValidPassword = password1.length >= 8;
-		passwordsMatch = password1 === password2 && password1 !== '' && password2 !== '' && password2.length >= 8;
-
+		passwordsMatch =
+			password1 === password2 && password1 !== '' && password2 !== '' && password2.length >= 8;
 	});
-	
+
 	// Initialise keyData et startTimes dynamiquement
 	let keyData: Record<string, any[]> = {};
 	let startTimes: Record<string, number> = {};
@@ -75,7 +75,6 @@
 			keyUpTimestamp: null,
 			durationInSeconds: null
 		});
-
 	}
 
 	function handleKeyUp(event: KeyboardEvent, field: string) {
@@ -182,23 +181,23 @@
 		<h2 class="text-center">To register you need to tap this words:</h2>
 		<div class="mb-3">
 			{#each random_words as word, index}
-			<div class="lead">{word}</div>
-			<div class="mb-3">
-				<input
-					type="text"
-					class="form-control"
-					id="{word}"
-					name="{word}"
-					aria-describedby="{word}Help"
-					bind:value={wordValue[index]}
-					autocomplete="off"
-					placeholder="Type the word"
-					aria-label="Type the word"
-					class:is-valid={word == wordValue[index]}
-					class:is-invalid={word !== wordValue[index]}
-					required
-				/>
-			</div>
+				<div class="lead">{word}</div>
+				<div class="mb-3">
+					<input
+						type="text"
+						class="form-control"
+						id={word}
+						name={word}
+						aria-describedby="{word}Help"
+						bind:value={wordValue[index]}
+						autocomplete="off"
+						placeholder="Type the word"
+						aria-label="Type the word"
+						class:is-valid={word == wordValue[index]}
+						class:is-invalid={word !== wordValue[index]}
+						required
+					/>
+				</div>
 			{/each}
 		</div>
 		<button type="submit" class="btn btn-primary mb-3 d-block mx-auto" disabled={!passwordsMatch}

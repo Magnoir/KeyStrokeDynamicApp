@@ -33,6 +33,7 @@
 		"bcrypt": "^5.1.1",
 		"bootstrap": "^5.3.3",
 		"firebase": "^11.0.2",
-		"firebase-admin": "^13.0.1"
+		"firebase-admin": "^13.0.1",
+		"svelte-adapter-bun": "^0.5.2"
 	}
 }
