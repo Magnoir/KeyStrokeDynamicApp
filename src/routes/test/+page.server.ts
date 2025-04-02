@@ -165,6 +165,6 @@ export const actions = {
 		const percentages: [string, number][] = counter.map(([key, count]) => {
 			return [key, (count / total) * 100];
 		});
-		return { success: true, data: { counter: counter, percentages: percentages } };
+		return { success: true, data: { percentages: percentages } };
 	}
 };

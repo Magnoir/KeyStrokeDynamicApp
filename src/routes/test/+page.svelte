@@ -10,8 +10,6 @@
 	let password2 = $state('');
 	let passwordsMatch1 = $state(false);
 	let passwordsMatch2 = $state(false);
-	let counter: [string, number][] = $state([]);
-	let percentages: [string, number][] = $state([]);
 	let combinedData: [string, number][] = $state([]);
 
 	function checkPasswords1() {
@@ -146,9 +144,7 @@
 		const result: ActionResult = deserialize(await response.text());
 
 		if (result.type === 'success') {
-			counter = result.data?.data?.counter;
-			percentages = result.data?.data?.percentages;
-			combinedData = [...counter, ...percentages];
+			combinedData = result.data?.data?.percentages;
 			combinedData.sort((a, b) => b[1] - a[1]);
 			data = '';
 			password = '';
