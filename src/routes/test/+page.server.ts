@@ -21,6 +21,43 @@ interface ProcessedRow {
 	key2: string | null;
 }
 
+function calculateHighestScore(predictionsentry: string[][]): string | null {
+    // Init the dictionary
+    const userScores: Record<string, number> = {};
+
+	// Gives scores (weight) depending on the user's rank
+    for (const prediction of predictionsentry) {
+        // First user gets 3, second gets 2, third gets 1
+        const scores = [3, 2, 1];
+        for (let i = 0; i < prediction.length; i++) {
+            const user = prediction[i];
+            if (userScores[user]) {
+                userScores[user] += scores[i];
+            } else {
+                userScores[user] = scores[i];
+            }
+        }
+    }
+    
+    // Find the user with the highest score
+    let maxScore = -1;
+    let topUsers: string[] = [];
+    for (const user in userScores) {
+        const score = userScores[user];
+        if (score > maxScore) {
+            maxScore = score;
+            topUsers = [user];
+        } else if (score === maxScore) {
+            topUsers.push(user);
+        }
+    }
+    
+    // Return the user with the highest score. If there's a tie, return the first.
+    return topUsers.length > 0 ? topUsers[0] : null;
+}
+
+
+
 function processKeyDataToDataFrame(items: Record<string, KeyDataEntry[]>): ProcessedRow[] {
 	const rows: ProcessedRow[] = [];
 
@@ -149,22 +186,7 @@ export const actions = {
 		// Lire la réponse en JSON
 		const response = await res.json();
 		const result = JSON.parse(response.body).predictions;
-		// Compter les occurrences
-		const counter: [string, number][] = result.reduce((acc: [string, number][], item: string) => {
-			const existingItem = acc.find(([key]) => key === item);
-			if (existingItem) {
-				existingItem[1] += 1;
-			} else {
-				acc.push([item, 1]);
-			}
-			return acc;
-		}, []);
 
-		// Calculer les pourcentages
-		const total: number = result.length;
-		const percentages: [string, number][] = counter.map(([key, count]) => {
-			return [key, (count / total) * 100];
-		});
-		return { success: true, data: { percentages: percentages } };
+		return { success: true, result: calculateHighestScore(result) };
 	}
 };
