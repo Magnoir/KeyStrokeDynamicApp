@@ -10,7 +10,7 @@
 	let password2 = $state('');
 	let passwordsMatch1 = $state(false);
 	let passwordsMatch2 = $state(false);
-	let combinedData: [string, number][] = $state([]);
+	let resultData = $state('');
 
 	function checkPasswords1() {
 		passwordsMatch1 = password === password1 && password1 !== '';
@@ -144,8 +144,7 @@
 		const result: ActionResult = deserialize(await response.text());
 
 		if (result.type === 'success') {
-			combinedData = result.data?.data?.percentages;
-			combinedData.sort((a, b) => b[1] - a[1]);
+			resultData = result.data?.result;
 			data = '';
 			password = '';
 			password1 = '';
@@ -227,17 +226,9 @@
 			</div>
 		</form>
 	</div>
-	{#if combinedData.length > 0}
+	{#if resultData !== ""}
 		<div class="card mb-1 text-center">
-			<h1>You are {combinedData[0][0]} !</h1>
-			<ul class="list-group">
-				{#each combinedData as [name, count]}
-					<li class="list-group-item d-flex justify-content-between">
-						<span>{name}</span>
-						<span class="badge bg-primary">{count.toFixed(2)}</span>
-					</li>
-				{/each}
-			</ul>
+			<h1>You are {resultData} !</h1>
 		</div>
 	{/if}
 </div>
