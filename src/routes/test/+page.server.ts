@@ -1,6 +1,6 @@
 import { ref, get } from 'firebase/database';
 import { db } from '$lib/firebase';
-import { get_current_user } from '../../db/session';
+import { get_current_user } from '$lib/db/session';
 import type { Cookies } from '@sveltejs/kit';
 import { URL_AWS_API } from '$env/static/private';
 
@@ -22,41 +22,39 @@ interface ProcessedRow {
 }
 
 function calculateHighestScore(predictionsentry: string[][]): string | null {
-    // Init the dictionary
-    const userScores: Record<string, number> = {};
+	// Init the dictionary
+	const userScores: Record<string, number> = {};
 
 	// Gives scores (weight) depending on the user's rank
-    for (const prediction of predictionsentry) {
-        // First user gets 3, second gets 2, third gets 1
-        const scores = [3, 2, 1];
-        for (let i = 0; i < prediction.length; i++) {
-            const user = prediction[i];
-            if (userScores[user]) {
-                userScores[user] += scores[i];
-            } else {
-                userScores[user] = scores[i];
-            }
-        }
-    }
-    
-    // Find the user with the highest score
-    let maxScore = -1;
-    let topUsers: string[] = [];
-    for (const user in userScores) {
-        const score = userScores[user];
-        if (score > maxScore) {
-            maxScore = score;
-            topUsers = [user];
-        } else if (score === maxScore) {
-            topUsers.push(user);
-        }
-    }
-    
-    // Return the user with the highest score. If there's a tie, return the first.
-    return topUsers.length > 0 ? topUsers[0] : null;
+	for (const prediction of predictionsentry) {
+		// First user gets 3, second gets 2, third gets 1
+		const scores = [3, 2, 1];
+		for (let i = 0; i < prediction.length; i++) {
+			const user = prediction[i];
+			if (userScores[user]) {
+				userScores[user] += scores[i];
+			} else {
+				userScores[user] = scores[i];
+			}
+		}
+	}
+
+	// Find the user with the highest score
+	let maxScore = -1;
+	let topUsers: string[] = [];
+	for (const user in userScores) {
+		const score = userScores[user];
+		if (score > maxScore) {
+			maxScore = score;
+			topUsers = [user];
+		} else if (score === maxScore) {
+			topUsers.push(user);
+		}
+	}
+
+	// Return the user with the highest score. If there's a tie, return the first.
+	return topUsers.length > 0 ? topUsers[0] : null;
 }
-
-
 
 function processKeyDataToDataFrame(items: Record<string, KeyDataEntry[]>): ProcessedRow[] {
 	const rows: ProcessedRow[] = [];

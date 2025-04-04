@@ -1,6 +1,6 @@
 <script lang="ts">
 	import 'bootstrap/dist/css/bootstrap.min.css';
-	export let data;
+	let { data, children } = $props();
 </script>
 
 <svelte:head>
@@ -23,21 +23,19 @@
 
 		<div class="collapse navbar-collapse" id="navbarNav">
 			<ul class="navbar-nav mx-auto">
-				{#if data.logged_in}
+				{#if data.logged_in && data.user_status === 1}
 					<li class="nav-item">
 						<a class="nav-link text-white" href="/home">Home</a>
 					</li>
 					<li class="nav-item">
 						<a class="nav-link text-white" href="/test">Test</a>
 					</li>
-					{#if data.user_status === 1}
-						<li class="nav-item">
-							<a class="nav-link text-white" href="/database">Database</a>
-						</li>
-						<li class="nav-item">
-							<a class="nav-link text-white" href="/admin">Admin</a>
-						</li>
-					{/if}
+					<li class="nav-item">
+						<a class="nav-link text-white" href="/database">Database</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link text-white" href="/admin">Admin</a>
+					</li>
 				{/if}
 				{#if !data.logged_in}
 					<li class="nav-item">
@@ -45,6 +43,9 @@
 					</li>
 					<li class="nav-item">
 						<a class="nav-link text-white" href="/login">Login</a>
+					</li>
+					<li class="nav-item">
+						<a class="nav-link text-white" href="/login-admin">Login Admin</a>
 					</li>
 				{/if}
 			</ul>
@@ -58,5 +59,5 @@
 </nav>
 
 <main>
-	<slot />
+	{@render children()}
 </main>

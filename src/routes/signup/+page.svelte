@@ -1,10 +1,7 @@
 <script lang="ts">
-	import { enhance } from '$app/forms';
 	import { random_words } from '$lib/words/words';
 	import type { ActionData } from './$types';
 	import { onMount, tick } from 'svelte';
-	import { deserialize } from '$app/forms';
-	import type { ActionResult } from '@sveltejs/kit';
 
 	let form: ActionData = $props();
 

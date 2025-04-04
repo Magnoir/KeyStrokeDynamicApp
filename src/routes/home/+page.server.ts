@@ -1,7 +1,8 @@
 import { ref, set, get } from 'firebase/database';
 import { db } from '$lib/firebase';
-import { get_current_user } from '../../db/session';
+import { get_current_user, has_session } from '$lib/db/session';
 import type { Cookies } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').Actions} */
 export const actions = {
@@ -23,6 +24,10 @@ export const actions = {
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ cookies }: { cookies: Cookies }) => {
+	const session_id = cookies.get('session_id');
+	if (!session_id) throw redirect(307, '/login');
+	const logged_in = await has_session(session_id);
+	if (!logged_in) throw redirect(307, '/login');
 	const sessionId = cookies.get('session_id');
 	if (!sessionId) {
 		throw new Error('Session ID is missing');

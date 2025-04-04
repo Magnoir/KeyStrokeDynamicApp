@@ -1,12 +1,25 @@
 import { db } from '$lib/firebase';
 import { ref, get } from 'firebase/database';
+import { has_session } from '$lib/db/session';
+import type { Cookies } from '@sveltejs/kit';
+import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
-export const load = async ({ parent }: { parent: () => Promise<void> }) => {
+export const load = async ({
+	parent,
+	cookies
+}: {
+	parent: () => Promise<void>;
+	cookies: Cookies;
+}) => {
+	const session_id = cookies.get('session_id');
+	if (!session_id) throw redirect(307, '/login');
+	const logged_in = await has_session(session_id);
+	if (!logged_in) throw redirect(307, '/login');
 	await parent();
 
-	const getDatabase = async () => {
-		const rootRef = ref(db, 'users/');
+	const getDatabase = async (folder: string) => {
+		const rootRef = ref(db, folder + '/');
 		try {
 			const snapshot = await get(rootRef);
 			return snapshot.exists()
@@ -18,6 +31,7 @@ export const load = async ({ parent }: { parent: () => Promise<void> }) => {
 		}
 	};
 
-	const database = await getDatabase();
-	return { database };
+	const usersDatabase = await getDatabase('users');
+	const signupsDatabase = await getDatabase('signup');
+	return { usersDatabase, signupsDatabase };
 };
