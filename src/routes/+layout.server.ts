@@ -1,5 +1,5 @@
 import { redirect } from '@sveltejs/kit';
-import { has_session, get_user_status } from '../db/session';
+import { has_session, get_user_status } from '$lib/db/session';
 import type { Cookies } from '@sveltejs/kit';
 
 /** @type {import('./$types').PageServerLoad} */
@@ -12,7 +12,12 @@ export const load = async ({ cookies, url }: { cookies: Cookies; url: URL }) => 
 		user_status = await get_user_status(session_id);
 	}
 
-	if (!logged_in && url.pathname !== '/login' && url.pathname !== '/signup') {
+	if (
+		!logged_in &&
+		url.pathname !== '/login' &&
+		url.pathname !== '/signup' &&
+		url.pathname !== '/login-admin'
+	) {
 		throw redirect(307, '/login');
 	}
 

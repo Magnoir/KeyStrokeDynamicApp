@@ -226,7 +226,7 @@
 			</div>
 		</form>
 	</div>
-	{#if resultData !== ""}
+	{#if resultData !== ''}
 		<div class="card mb-1 text-center">
 			<h1>You are {resultData} !</h1>
 		</div>

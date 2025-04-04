@@ -1,4 +1,4 @@
-import { delete_session } from '../db/session';
+import { delete_session } from '$lib/db/session';
 import { redirect } from '@sveltejs/kit';
 
 /** @type {import('./$types').Actions} */

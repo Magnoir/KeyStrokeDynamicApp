@@ -1,7 +1,7 @@
 import { json } from '@sveltejs/kit';
 import { db } from '$lib/firebase';
 import { ref, remove } from 'firebase/database';
-import { has_session } from '../../../db/session';
+import { has_session } from '$lib/db/session';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export async function POST({ request, cookies }: RequestEvent) {

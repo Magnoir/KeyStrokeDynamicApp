@@ -1,44 +1,163 @@
-import type { Actions } from './$types';
-import { fail, redirect } from '@sveltejs/kit';
-import { ref, get } from 'firebase/database';
-import { db } from '$lib/firebase';
-import { compare } from 'bcrypt';
-import { save_session } from '../../db/session';
+import { URL_AWS_API } from '$env/static/private';
 
-export const actions: Actions = {
-	default: async ({ request, cookies }) => {
-		const data = await request.formData();
-		const username = data.get('username') as string;
-		const password = data.get('password') as string;
+interface KeyDataEntry {
+	keyDownTimestamp: number;
+	keyUpTimestamp: number;
+	key?: string;
+}
 
-		if (!username) {
-			return fail(400, { error: 'Username is required' });
+interface ProcessedRow {
+	keydownTime: number | null;
+	UD: number | null;
+	DD: number | null;
+	UU: number | null;
+	DU: number | null;
+	iteration: number;
+	key1: string;
+	key2: string | null;
+}
+
+function calculateHighestScore(predictionsentry: string[][]): string | null {
+	// Init the dictionary
+	const userScores: Record<string, number> = {};
+
+	// Gives scores (weight) depending on the user's rank
+	for (const prediction of predictionsentry) {
+		// First user gets 3, second gets 2, third gets 1
+		const scores = [3, 2, 1];
+		for (let i = 0; i < prediction.length; i++) {
+			const user = prediction[i];
+			if (userScores[user]) {
+				userScores[user] += scores[i];
+			} else {
+				userScores[user] = scores[i];
+			}
 		}
-		if (!password) {
-			return fail(400, { error: 'Password is required' });
+	}
+
+	// Find the user with the highest score
+	let maxScore = -1;
+	let topUsers: string[] = [];
+	for (const user in userScores) {
+		const score = userScores[user];
+		if (score > maxScore) {
+			maxScore = score;
+			topUsers = [user];
+		} else if (score === maxScore) {
+			topUsers.push(user);
 		}
+	}
 
-		const userRef = ref(db, `authentication/${username}`);
-		const snapshot = await get(userRef);
+	// Return the user with the highest score. If there's a tie, return the first.
+	return topUsers.length > 0 ? topUsers[0] : null;
+}
 
-		if (!snapshot.exists()) {
-			return fail(401, { error: 'Invalid username or password' });
-		}
+function processKeyDataToDataFrame(items: Record<string, KeyDataEntry[]>): ProcessedRow[] {
+	const rows: ProcessedRow[] = [];
 
-		const storedData = snapshot.val();
-		const passwordCorrect = await compare(password, storedData.password);
+	for (const [, subSubItems] of Object.entries(items)) {
+		const keyData = subSubItems as KeyDataEntry[];
 
-		if (!passwordCorrect) {
-			return fail(401, { error: 'Invalid username or password' });
-		}
+		if (!keyData || keyData.length === 0) continue; // Sauter si keyData est vide
 
-		const one_hour = 60 * 60;
-		const session_id = save_session(username, storedData.status);
-		cookies.set('session_id', session_id, {
-			path: '/',
-			maxAge: one_hour
+		// Calcul des metrics
+		const keyDownTimes = keyData.map((entry) => {
+			if (entry.keyDownTimestamp && entry.keyUpTimestamp) {
+				return roundToDecimal((entry.keyUpTimestamp - entry.keyDownTimestamp) * 0.001, 3);
+			}
+			return null;
 		});
 
-		throw redirect(303, '/home');
+		const keyUpDown = keyData.slice(1).map((_, index) => {
+			if (keyData[index].keyUpTimestamp && keyData[index + 1].keyDownTimestamp) {
+				return roundToDecimal(
+					(keyData[index + 1].keyDownTimestamp - keyData[index].keyUpTimestamp) * 0.001,
+					3
+				);
+			}
+			return null;
+		});
+
+		const keyDownDown = keyData.slice(1).map((_, index) => {
+			if (keyData[index].keyDownTimestamp && keyData[index + 1].keyDownTimestamp) {
+				return roundToDecimal(
+					(keyData[index + 1].keyDownTimestamp - keyData[index].keyDownTimestamp) * 0.001,
+					3
+				);
+			}
+			return null;
+		});
+
+		const keyUpUp = keyData.slice(1).map((_, index) => {
+			if (keyData[index].keyUpTimestamp && keyData[index + 1].keyUpTimestamp) {
+				return roundToDecimal(
+					(keyData[index + 1].keyUpTimestamp - keyData[index].keyUpTimestamp) * 0.001,
+					3
+				);
+			}
+			return null;
+		});
+
+		const keyDownUp = keyData.slice(1).map((_, index) => {
+			if (keyData[index].keyDownTimestamp && keyData[index + 1].keyUpTimestamp) {
+				return roundToDecimal(
+					(keyData[index + 1].keyUpTimestamp - keyData[index].keyDownTimestamp) * 0.001,
+					3
+				);
+			}
+			return null;
+		});
+
+		const keys = keyData.map((entry) => entry.key || 'null');
+
+		// Ajout des données dans une liste de lignes
+		for (let iteration = 0; iteration < keyDownTimes.length - 1; iteration++) {
+			rows.push({
+				keydownTime: keyDownTimes[iteration],
+				UD: keyUpDown[iteration],
+				DD: keyDownDown[iteration],
+				DU: keyDownUp[iteration],
+				UU: keyUpUp[iteration],
+				iteration: iteration + 1,
+				key1: keys[iteration],
+				key2: keys[iteration + 1] || null
+			});
+		}
+	}
+
+	return rows;
+}
+
+// Fonction utilitaire pour arrondir à un certain nombre de décimales
+function roundToDecimal(value: number, decimals: number): number {
+	const factor = Math.pow(10, decimals);
+	return Math.round(value * factor) / factor;
+}
+
+/** @type {import('./$types').Actions} */
+export const actions = {
+	aws: async ({ request }: { request: Request }) => {
+		const formData = await request.formData();
+		const userData = JSON.parse(formData.get('keyData') as string) as Record<
+			string,
+			KeyDataEntry[]
+		>;
+		const url = URL_AWS_API;
+		const processdata = processKeyDataToDataFrame(userData);
+		const res = await fetch(url, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({
+				tables: processdata
+			})
+		});
+
+		// Lire la réponse en JSON
+		const response = await res.json();
+		const result = JSON.parse(response.body).predictions;
+
+		return { success: true, result: calculateHighestScore(result) };
 	}
 };

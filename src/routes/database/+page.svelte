@@ -1,38 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-
-	export let data;
-
-	interface KeyData {
-		type: string;
-		key: string;
-		keyDownTime?: number;
-		keyUpTime?: number;
-		durationInSeconds?: number;
-		floatingTextarea2?: string;
-		floatingTextarea1?: string;
-		password?: string;
-		password1?: string;
-		password2?: string;
-	}
-
-	interface Record {
-		id: string;
-		keyData?: KeyData;
-		password?: string;
-		password1?: string;
-		password2?: string;
-		username?: string;
-		floatingTextarea1?: string;
-		floatingTextarea2?: string;
-	}
-
+	import type { Record } from '$lib/types';
+	let data = $props();
 	let parsedData: Record[] = [];
-	let groupedData: Record[][] = [];
-	let error: string | null = null;
+	let groupedData: Record[][] = $state([]);
+	let error: string | null = $state(null);
 
 	onMount(async () => {
-		const result = data.database;
+		const result = data.data.usersDatabase;
 		if (result.data && typeof result.data === 'object') {
 			const records: Record[] = Object.entries(result.data).flatMap(([, record]) =>
 				Object.entries(record as { [key: string]: any }).map(([sub_key, recordData]) => ({
@@ -107,12 +82,25 @@
 		link.download = 'data.json';
 		link.click();
 	}
+
+	function downloadSignupJSON() {
+		const json = JSON.stringify(data.data.signupsDatabase, null, 2);
+		const blob = new Blob([json], { type: 'application/json' });
+		const link = document.createElement('a');
+		link.href = URL.createObjectURL(blob);
+		link.download = 'data.json';
+		link.click();
+	}
 </script>
 
 <div class="container mt-4">
 	<div class="d-flex align-items-center justify-content-between mb-4">
-		<h1 class="mb-0">Database</h1>
-		<button class="btn btn-primary" on:click={downloadJSON}>Download Data as JSON</button>
+		<h1 class="mb-0">Sign-up database (new)</h1>
+		<button class="btn btn-primary" onclick={downloadSignupJSON}>Download Data as JSON</button>
+	</div>
+	<div class="d-flex align-items-center justify-content-between mb-4">
+		<h1 class="mb-0">Users database (old)</h1>
+		<button class="btn btn-primary" onclick={downloadJSON}>Download Data as JSON</button>
 	</div>
 	{#if error}
 		<div class="alert alert-danger">{error}</div>
@@ -175,7 +163,7 @@
 										</button>
 										<button
 											class="btn btn-sm btn-danger ms-2"
-											on:click={() => deleteRecord(record.id, record.username)}
+											onclick={() => deleteRecord(record.id, record.username)}
 										>
 											Delete
 										</button>
