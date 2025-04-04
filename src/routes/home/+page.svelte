@@ -1,67 +1,10 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-
+	import { text } from '$lib/words/text';
+	import { mots } from '$lib/words/mots';
+	import { excludedKeys } from '$lib/words/excludedKeys';
 	export const form = {};
-	export let data;
-
-	const text =
-		"La frappologie est l'art de manipuler les mots, de jouer avec leur " +
-		'sonorité et leur rythme pour créer des effets comiques, rythmiques ou poétiques. ' +
-		"C'est une exploration ludique et créative du langage, où la répétition, les allitérations " +
-		'et les assonances se mêlent pour offrir des morceaux de textes rythmés et amusants.';
-
-	const mots: string[] = [
-		'Arbre',
-		'Océan',
-		'Lumière',
-		'Montagne',
-		'Etoile',
-		'Papillon',
-		'Nuance',
-		'Harmonie',
-		'Couleur',
-		'Miroir',
-		'Éclat',
-		'Douceur',
-		'Voyage',
-		'Rivière',
-		'Pluie',
-		'Rêve',
-		'Lune',
-		'Musique',
-		'Parfum',
-		'Sable',
-		'Ciel',
-		'Forêt',
-		'Liberté',
-		'Ecriture',
-		'Sérénité',
-		'Feuille',
-		'Chant',
-		'Légende',
-		'Bonté',
-		'Mystère',
-		'Espoir',
-		'Evasion',
-		'Monstre',
-		'Mémoire',
-		'Oiseau',
-		'Reflet',
-		'Poème',
-		'Savoir',
-		'Arôme',
-		'Ombre',
-		'Cascade',
-		'Tempête',
-		'Parole',
-		'Diamant',
-		'Flamme',
-		'Rire',
-		'Espièglerie',
-		'Danse',
-		'Cri',
-		'Aube'
-	];
+	let data = $props();
 
 	function genererTexteAleatoireUnique(mots: string[], longueur: number): string {
 		const motsMélangés = [...mots].sort(() => Math.random() - 0.5);
@@ -73,24 +16,24 @@
 
 	const texteAleatoireUnique = genererTexteAleatoireUnique(mots, 50);
 
-	let passwordcounter = 0;
-	let textarea1counter = 0;
-	let textarea2counter = 0;
+	let passwordcounter = $state(0);
+	let textarea1counter = $state(0);
+	let textarea2counter = $state(0);
 
-	let textarea1 = '';
-	let textarea2 = '';
+	let textarea1 = $state('');
+	let textarea2 = $state('');
 
-	let textarea1Valid = false;
-	let textarea2Valid = false;
+	let textarea1Valid = $state(false);
+	let textarea2Valid = $state(false);
 
-	let errorMessage: string = '';
-	let successMessage: string = '';
-	let password = '';
-	let password1 = '';
-	let password2 = '';
-	let passwordsMatch1 = false;
-	let passwordsMatch2 = false;
-	let isPasswordValid = false;
+	let errorMessage: string = $state('');
+	let successMessage: string = $state('');
+	let password = $state('');
+	let password1 = $state('');
+	let password2 = $state('');
+	let passwordsMatch1 = $state(false);
+	let passwordsMatch2 = $state(false);
+	let isPasswordValid = $state(false);
 
 	function checkPasswords1() {
 		passwordsMatch1 = password === password1 && password1 !== '' && password1.length >= 8;
@@ -131,13 +74,13 @@
 		textarea2Valid = isProgressingCorrectly && textarea2.length !== 0;
 	}
 
-	$: {
+	$effect(() => {
 		checkPasswords1();
 		checkPasswords2();
 		checkPasswordValidity();
 		checkTextarea1();
 		checkTextarea2();
-	}
+	});
 
 	let keyData: Record<string, any[]> = {
 		password: [],
@@ -156,22 +99,6 @@
 	};
 
 	function handleKeyDown(event: KeyboardEvent, field: string) {
-		const excludedKeys = [
-			'Tab',
-			'Enter',
-			'Shift',
-			'Control',
-			'Alt',
-			'Backspace',
-			'Delete',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowUp',
-			'ArrowDown',
-			'Escape',
-			'Suppr',
-			'CapsLock'
-		];
 		if (excludedKeys.includes(event.key)) return;
 
 		const currentTime = new Date().getTime();
@@ -204,22 +131,6 @@
 	}
 
 	function handleKeyUp(event: KeyboardEvent, field: string) {
-		const excludedKeys = [
-			'Tab',
-			'Enter',
-			'Shift',
-			'Control',
-			'Alt',
-			'Backspace',
-			'Delete',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowUp',
-			'ArrowDown',
-			'Escape',
-			'Suppr',
-			'CapsLock'
-		];
 		if (excludedKeys.includes(event.key)) return;
 
 		const currentTime = new Date().getTime();
@@ -247,7 +158,7 @@
 		const hiddenUsernameInput = document.createElement('input');
 		hiddenUsernameInput.type = 'hidden';
 		hiddenUsernameInput.name = 'username';
-		hiddenUsernameInput.value = data.props.username;
+		hiddenUsernameInput.value = data.data.props.username;
 		form.appendChild(hiddenUsernameInput);
 		form.submit();
 	}
@@ -262,8 +173,8 @@
 			}
 		});
 
-		for (const key in data.userDatabase.data) {
-			const element = data.userDatabase.data[key];
+		for (const key in data.data.userDatabase.data) {
+			const element = data.data.userDatabase.data[key];
 			if (element.password) {
 				passwordcounter++;
 			} else if (element.floatingTextarea1) {
@@ -278,7 +189,7 @@
 <div class="container p-3 mx-auto">
 	<div class="card mb-1 text-center">
 		<div class="card-body">
-			<h5 class="card-title">Username: <span class="fw-bold">{data.props.username}</span></h5>
+			<h5 class="card-title">Username: <span class="fw-bold">{data.data.props.username}</span></h5>
 			<div class="row">
 				<div class="col-md-4">
 					<span class="d-block">I) Attempts Count:</span>
@@ -296,7 +207,7 @@
 		</div>
 	</div>
 	<div class="card mb-1">
-		<form method="POST" on:submit={handleSubmit} action="?/form">
+		<form method="POST" onsubmit={handleSubmit} action="?/form">
 			<div class="card-body">
 				<h3 class="text-center">I) First test : all passwords must be identical</h3>
 				<label for="password" class="form-label">Password (first time)</label>
@@ -312,7 +223,7 @@
 					aria-describedby="passwordHelp"
 					class:is-valid={isPasswordValid}
 					class:is-invalid={!isPasswordValid}
-					on:input={checkPasswordValidity}
+					oninput={checkPasswordValidity}
 				/>
 				<div id="passwordHelp" class="form-text">Password must be at least 8 characters long.</div>
 				<label for="password1" class="form-label">Password (second time)</label>
@@ -328,7 +239,7 @@
 					aria-describedby="password1Help"
 					class:is-valid={passwordsMatch1}
 					class:is-invalid={!passwordsMatch1}
-					on:input={checkPasswords1}
+					oninput={checkPasswords1}
 				/>
 				<div id="password1Help" class="form-text">Password must be at least 8 characters long.</div>
 				<label for="password2" class="form-label">Password (third time)</label>
@@ -344,7 +255,7 @@
 					aria-describedby="password2Help"
 					class:is-valid={passwordsMatch2}
 					class:is-invalid={!passwordsMatch2}
-					on:input={checkPasswords2}
+					oninput={checkPasswords2}
 				/>
 				<div id="password2Help" class="form-text">Password must be at least 8 characters long.</div>
 				<button
@@ -356,7 +267,7 @@
 		</form>
 	</div>
 	<div class="card mb-1">
-		<form method="POST" on:submit={handleSubmit} action="?/form">
+		<form method="POST" onsubmit={handleSubmit} action="?/form">
 			<div class="card-body">
 				<h3 class="text-center">II) Second test : the text must be copied identically</h3>
 				<h6 class="text-center">"{text}"</h6>
@@ -372,7 +283,7 @@
 						required
 						class:is-valid={textarea1Valid}
 						class:is-invalid={!textarea1Valid}
-						on:input={checkTextarea1}
+						oninput={checkTextarea1}
 						style="height:100%;"
 					></textarea>
 					<label for="floatingTextarea1">Comments</label>
@@ -386,7 +297,7 @@
 		</form>
 	</div>
 	<div class="card mb-1">
-		<form method="POST" on:submit={handleSubmit} action="?/form">
+		<form method="POST" onsubmit={handleSubmit} action="?/form">
 			<div class="card-body">
 				<h3 class="text-center">III) Third test : the text must be copied identically</h3>
 				<h6 class="text-center">"{texteAleatoireUnique}"</h6>
@@ -402,7 +313,7 @@
 						required
 						class:is-valid={textarea2Valid}
 						class:is-invalid={!textarea2Valid}
-						on:input={checkTextarea2}
+						oninput={checkTextarea2}
 						style="height:100%;"
 					></textarea>
 					<label for="floatingTextarea2">Comments</label>

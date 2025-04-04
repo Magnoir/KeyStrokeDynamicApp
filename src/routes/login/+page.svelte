@@ -1,9 +1,7 @@
 <script lang="ts">
-	import type { ActionData } from './$types';
 	import { random_words } from '$lib/words/words';
 	import { onMount, tick } from 'svelte';
-
-	let form: ActionData = $props();
+	import { excludedKeys } from '$lib/words/excludedKeys';
 
 	const shuffle = (array: string[]) => array.sort(() => Math.random() - 0.5);
 	const selected_words = shuffle(random_words).slice(0, 3);
@@ -19,22 +17,6 @@
 		startTimes[field] = 0;
 	});
 	function handleKeyDown(event: KeyboardEvent, field: string) {
-		const excludedKeys = [
-			'Tab',
-			'Enter',
-			'Shift',
-			'Control',
-			'Alt',
-			'Backspace',
-			'Delete',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowUp',
-			'ArrowDown',
-			'Escape',
-			'Suppr',
-			'CapsLock'
-		];
 		if (excludedKeys.includes(event.key)) return;
 
 		const currentTime = new Date().getTime();
@@ -67,22 +49,6 @@
 	}
 
 	function handleKeyUp(event: KeyboardEvent, field: string) {
-		const excludedKeys = [
-			'Tab',
-			'Enter',
-			'Shift',
-			'Control',
-			'Alt',
-			'Backspace',
-			'Delete',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowUp',
-			'ArrowDown',
-			'Escape',
-			'Suppr',
-			'CapsLock'
-		];
 		if (excludedKeys.includes(event.key)) return;
 
 		const currentTime = new Date().getTime();
