@@ -1,10 +1,14 @@
 <script lang="ts">
 	import 'bootstrap/dist/css/bootstrap.min.css';
+	import iconImg from '$lib/images/favicon.webp';
 	let { data, children } = $props();
 </script>
 
 <svelte:head>
-	<title>Key Stroke Dynamics Tests</title>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<link rel="icon" type="image/webp" sizes="192x192" href={iconImg} />
+	<meta name="description" content="Navigation bar of the website" />
 </svelte:head>
 
 <nav class="navbar navbar-expand-lg bg-primary">

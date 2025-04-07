@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { deserialize } from '$app/forms';
 	import type { ActionResult } from '@sveltejs/kit';
+	import { handleKeyDown, handleKeyUp } from '$lib/functions/keys';
 
 	export const form = {};
 	let data = $props();
@@ -39,87 +40,6 @@
 		floatingTextarea1: 0,
 		floatingTextarea2: 0
 	};
-
-	function handleKeyDown(event: KeyboardEvent, field: string) {
-		const excludedKeys = [
-			'Tab',
-			'Enter',
-			'Shift',
-			'Control',
-			'Alt',
-			'Backspace',
-			'Delete',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowUp',
-			'ArrowDown',
-			'Escape',
-			'Suppr',
-			'CapsLock'
-		];
-		if (excludedKeys.includes(event.key)) return;
-
-		const currentTime = new Date().getTime();
-
-		const focusedElement = document.activeElement;
-		const inputElement = document.getElementById(field) as HTMLInputElement;
-
-		if (focusedElement !== inputElement) return;
-
-		if (inputElement.value === '' && keyData[field].length > 0) {
-			keyData[field] = [];
-			startTimes[field] = currentTime;
-		}
-
-		const existingKey = keyData[field].find(
-			(key) => key.key === event.key && key.keyUpTime === null
-		);
-		if (existingKey) return;
-
-		if (startTimes[field] === 0) startTimes[field] = currentTime;
-
-		keyData[field].push({
-			key: event.key,
-			keyDownTime: parseFloat(((currentTime - startTimes[field]) / 1000).toFixed(6)),
-			keyDownTimestamp: currentTime,
-			keyUpTime: null,
-			keyUpTimestamp: null,
-			durationInSeconds: null
-		});
-	}
-
-	function handleKeyUp(event: KeyboardEvent, field: string) {
-		const excludedKeys = [
-			'Tab',
-			'Enter',
-			'Shift',
-			'Control',
-			'Alt',
-			'Backspace',
-			'Delete',
-			'ArrowLeft',
-			'ArrowRight',
-			'ArrowUp',
-			'ArrowDown',
-			'Escape',
-			'Suppr',
-			'CapsLock'
-		];
-		if (excludedKeys.includes(event.key)) return;
-
-		const currentTime = new Date().getTime();
-
-		const lastKeyIndex = keyData[field].findIndex(
-			(key) => key.key === event.key && key.keyUpTime === null
-		);
-
-		if (lastKeyIndex !== -1) {
-			const lastKey = keyData[field][lastKeyIndex];
-			lastKey.keyUpTime = parseFloat(((currentTime - startTimes[field]) / 1000).toFixed(6));
-			lastKey.keyUpTimestamp = currentTime;
-			lastKey.durationInSeconds = parseFloat((lastKey.keyUpTime - lastKey.keyDownTime).toFixed(6));
-		}
-	}
 
 	async function handleSubmit(
 		event: SubmitEvent & { currentTarget: EventTarget & HTMLFormElement }
@@ -160,8 +80,12 @@
 		fields.forEach((field) => {
 			const element = document.getElementById(field) as HTMLInputElement;
 			if (element) {
-				element.addEventListener('keydown', (event) => handleKeyDown(event, field));
-				element.addEventListener('keyup', (event) => handleKeyUp(event, field));
+				element.addEventListener('keydown', (event) =>
+					handleKeyDown(event, field, startTimes, keyData)
+				);
+				element.addEventListener('keyup', (event) =>
+					handleKeyUp(event, field, startTimes, keyData)
+				);
 			}
 		});
 	});
