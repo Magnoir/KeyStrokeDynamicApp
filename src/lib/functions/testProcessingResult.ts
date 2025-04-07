@@ -102,7 +102,6 @@ export function processKeyDataToDataFrame(items: Record<string, KeyDataEntry[]>)
 				DD: keyDownDown[iteration],
 				DU: keyDownUp[iteration],
 				UU: keyUpUp[iteration],
-				iteration: iteration + 1,
 				key1: keys[iteration],
 				key2: keys[iteration + 1] || null
 			});

@@ -46,8 +46,12 @@
 		usefields.forEach((field) => {
 			const element = document.getElementById(field) as HTMLInputElement;
 			if (element) {
-				element.addEventListener('keydown', (event) => handleKeyDownSignup(event, field, startTimes, keyData));
-				element.addEventListener('keyup', (event) => handleKeyUpSignup(event, field, startTimes, keyData));
+				element.addEventListener('keydown', (event) =>
+					handleKeyDownSignup(event, field, startTimes, keyData)
+				);
+				element.addEventListener('keyup', (event) =>
+					handleKeyUpSignup(event, field, startTimes, keyData)
+				);
 			}
 		});
 	});

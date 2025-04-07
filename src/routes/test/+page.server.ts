@@ -4,7 +4,10 @@ import { get_current_user } from '$lib/db/session';
 import type { Cookies } from '@sveltejs/kit';
 import { URL_AWS_API } from '$env/static/private';
 import type { KeyDataEntry } from '$lib/types/KeyDataEntry';
-import{ processKeyDataToDataFrame, calculateHighestScore } from '$lib/functions/testProcessingResult';
+import {
+	processKeyDataToDataFrame,
+	calculateHighestScore
+} from '$lib/functions/testProcessingResult';
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ cookies }: { cookies: Cookies }) => {

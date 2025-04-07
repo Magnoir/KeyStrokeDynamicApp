@@ -28,9 +28,12 @@ export function handleKeyDown(
 	});
 }
 
-export function handleKeyDownSignup(event: KeyboardEvent, field: string,
+export function handleKeyDownSignup(
+	event: KeyboardEvent,
+	field: string,
 	startTimes: Record<string, number>,
-	keyData: Record<string, any[]>) {
+	keyData: Record<string, any[]>
+) {
 	if (excludedKeys.includes(event.key)) return;
 
 	const currentTime = new Date().getTime();
@@ -45,9 +48,7 @@ export function handleKeyDownSignup(event: KeyboardEvent, field: string,
 		startTimes[field] = currentTime;
 	}
 
-	const existingKey = keyData[field].find(
-		(key) => key.key === event.key && key.keyUpTime === null
-	);
+	const existingKey = keyData[field].find((key) => key.key === event.key && key.keyUpTime === null);
 	if (existingKey) return;
 
 	if (startTimes[field] === 0) startTimes[field] = currentTime;
@@ -62,9 +63,12 @@ export function handleKeyDownSignup(event: KeyboardEvent, field: string,
 	});
 }
 
-export function handleKeyUpSignup(event: KeyboardEvent, field: string,
+export function handleKeyUpSignup(
+	event: KeyboardEvent,
+	field: string,
 	startTimes: Record<string, number>,
-	keyData: Record<string, any[]>) {
+	keyData: Record<string, any[]>
+) {
 	if (excludedKeys.includes(event.key)) return;
 	const currentTime = new Date().getTime();
 	const lastKeyIndex = keyData[field].findIndex(
