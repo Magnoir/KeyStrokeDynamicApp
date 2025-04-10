@@ -1,6 +1,6 @@
 <script lang="ts">
 	import TestForms from '$lib/components/TestForms.svelte';
-	let models = ['a', 'b'];
+	let models = ['GMM-UBM'];
 </script>
 
 <div class="container p-3 mx-auto">

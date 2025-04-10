@@ -11,8 +11,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const keyData = data.get('keyData') as string;
 		const username = data.get('username') as string;
-		const password = data.get('password') as string;
-
+		const password = data.get('password1') as string;
 		if (!username) return fail(400, { error: 'Username is required' });
 		if (!password) return fail(400, { error: 'Password is required' });
 		const authentificationRef = ref(db, `authentication/${username}`);
@@ -29,6 +28,7 @@ export const actions: Actions = {
 			}
 			return fail(500, { error: 'Internal server error' });
 		}
+		console.log("test");
 		try {
 			const salt = await genSalt(SALT_ROUNDS);
 			const hashedPassword = await hash(password, salt);
@@ -44,7 +44,7 @@ export const actions: Actions = {
 			return fail(500, { error: 'Internal server error' });
 		}
 		try {
-			const userData = ref(db, `signup/${username}`);
+			const userData = ref(db, `signupnew/${username}`);
 			await set(userData, JSON.parse(keyData));
 		} catch (error: unknown) {
 			if (error instanceof Error) {

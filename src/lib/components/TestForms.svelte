@@ -163,7 +163,6 @@
 </script>
 
 <div class="container p-3 mx-auto" style="max-width: 400px;">
-	<h1>{title}</h1>
 	<form method="POST" action="?/aws" onsubmit={handleSubmit}>
 		<div class="mb-3">
 			<label for="username-{model}" class="form-label">Username</label>

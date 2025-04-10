@@ -11,7 +11,7 @@
 	let isValidPassword = $state(false);
 	let passwordsMatch = $state(false);
 	let wordValue: string[] = $state(Array(10).fill(''));
-	const usefields = ['username', ...random_words];
+	const usefields = ['username', 	'password-1', 'password-2', 'password-3', 'password-4', 'password-5', 'password-6', 'password-7', 'password-8', 'password-9', 'password-10'];
 
 	$effect(() => {
 		isValidPassword = password1.length >= 8;
@@ -108,8 +108,8 @@
 					<input
 						type="text"
 						class="form-control"
-						id={word}
-						name={word}
+						id={word + "-" + index}
+						name={word + "-" + index}
 						aria-describedby="{word}Help"
 						bind:value={wordValue[index]}
 						autocomplete="off"

@@ -84,7 +84,7 @@
 	}
 
 	function downloadSignupJSON() {
-		const json = JSON.stringify(data.data.signupsDatabase, null, 2);
+		const json = JSON.stringify(data.data.signupnewDatabase, null, 2);
 		const blob = new Blob([json], { type: 'application/json' });
 		const link = document.createElement('a');
 		link.href = URL.createObjectURL(blob);
@@ -95,7 +95,7 @@
 
 <div class="container mt-4">
 	<div class="d-flex align-items-center justify-content-between mb-4">
-		<h1 class="mb-0">Sign-up database (new)</h1>
+		<h1 class="mb-0">Sign-up database (new new)</h1>
 		<button class="btn btn-primary" onclick={downloadSignupJSON}>Download Data as JSON</button>
 	</div>
 	<div class="d-flex align-items-center justify-content-between mb-4">
