@@ -48,9 +48,6 @@
 					<li class="nav-item">
 						<a class="nav-link text-white" href="/login">Login</a>
 					</li>
-					<li class="nav-item">
-						<a class="nav-link text-white" href="/login-admin">Login Admin</a>
-					</li>
 				{/if}
 			</ul>
 		</div>
