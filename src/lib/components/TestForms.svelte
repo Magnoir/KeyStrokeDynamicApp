@@ -115,7 +115,7 @@
 			resultData = '';
 			keyData = {};
 			startTimes = {};
-			usefields = ['username-' + model, ...selected_words.map((word) => word + '-' + model)];
+			usefields = ['username-' + model, ...selected_words.map((word, index) => word + '-' + model + '-' + index)];
 			usefields.forEach((field) => {
 				keyData[field] = [];
 				startTimes[field] = 0;
@@ -146,7 +146,7 @@
 
 	onMount(async () => {
 		await tick(); // Attendre que Svelte ait bien mis à jour le DOM
-		usefields = ['username-' + model, ...selected_words.map((word) => word + '-' + model)];
+		usefields = ['username-' + model, ...selected_words.map((word, index) => word + '-' + model + '-' + index)];
 		usefields.forEach((field) => {
 			keyData[field] = [];
 			startTimes[field] = 0;
@@ -191,7 +191,7 @@
 				type="text"
 				autocomplete="off"
 				class="form-control mb-2"
-				id={word + '-' + model}
+				id={word + '-' + model + '-' + index}
 				name={word + '-' + model}
 				required
 				bind:value={wordValue[index]}
