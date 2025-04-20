@@ -32,9 +32,6 @@
 						<a class="nav-link text-white" href="/home">Home</a>
 					</li>
 					<li class="nav-item">
-						<a class="nav-link text-white" href="/test">Test</a>
-					</li>
-					<li class="nav-item">
 						<a class="nav-link text-white" href="/database">Database</a>
 					</li>
 					<li class="nav-item">
