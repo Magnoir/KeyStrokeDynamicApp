@@ -1,6 +1,16 @@
 import type { KeyDataEntry } from '$lib/types/KeyDataEntry';
 import type { ProcessedRow } from '$lib/types/ProcessedRow';
 
+/**
+ * Calculates the user with the highest score based on a series of ranked predictions.
+ * Each prediction entry contains an array of user IDs ranked from highest to lowest.
+ * Scores are assigned based on the rank: 3 points for the first user, 2 points for the second, 
+ * and 1 point for the third. The function aggregates scores for each user across all predictions.
+ * 
+ * @param predictionsentry - A 2D array where each inner array represents a ranked list of user IDs.
+ * @returns The user ID with the highest score. If there is a tie, the first user in the tie is returned.
+ *          Returns `null` if no users are present in the predictions.
+ */
 export function calculateHighestScore(predictionsentry: string[][]): string | null {
 	// Init the dictionary
 	const userScores: Record<string, number> = {};
@@ -36,6 +46,34 @@ export function calculateHighestScore(predictionsentry: string[][]): string | nu
 	return topUsers.length > 0 ? topUsers[0] : null;
 }
 
+/**
+ * Processes a record of key data entries into a structured data frame.
+ *
+ * @param items - A record where the keys are strings and the values are arrays of `KeyDataEntry` objects.
+ *                Each `KeyDataEntry` represents a key event with associated timestamps and key information.
+ * 
+ * @returns An array of `ProcessedRow` objects, where each row contains calculated metrics and key pair information.
+ * 
+ * The function performs the following steps:
+ * - Iterates over the provided `items` object.
+ * - For each array of `KeyDataEntry`, calculates various timing metrics:
+ *   - `keydownTime`: The duration of a key being held down.
+ *   - `UD`: The time between a key being released and the next key being pressed.
+ *   - `DD`: The time between consecutive key presses.
+ *   - `DU`: The time between a key press and the next key release.
+ *   - `UU`: The time between consecutive key releases.
+ * - Extracts the key values for each entry.
+ * - Constructs rows of processed data, each containing the calculated metrics and key pair information.
+ * 
+ * Each row in the resulting array includes:
+ * - `keydownTime`: The duration of the key press in seconds (rounded to 3 decimal places).
+ * - `UD`: The time between key release and the next key press in seconds (rounded to 3 decimal places).
+ * - `DD`: The time between consecutive key presses in seconds (rounded to 3 decimal places).
+ * - `DU`: The time between a key press and the next key release in seconds (rounded to 3 decimal places).
+ * - `UU`: The time between consecutive key releases in seconds (rounded to 3 decimal places).
+ * - `key1`: The current key in the sequence.
+ * - `key2`: The next key in the sequence (or `null` if there is no next key).
+ */
 export function processKeyDataToDataFrame(items: Record<string, KeyDataEntry[]>): ProcessedRow[] {
 	const rows: ProcessedRow[] = [];
 
