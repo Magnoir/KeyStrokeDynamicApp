@@ -28,7 +28,6 @@ export const actions: Actions = {
 			}
 			return fail(500, { error: 'Internal server error' });
 		}
-		console.log("test");
 		try {
 			const salt = await genSalt(SALT_ROUNDS);
 			const hashedPassword = await hash(password, salt);

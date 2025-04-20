@@ -34,5 +34,5 @@ export const load = async ({
 	const usersDatabase = await getDatabase('users');
 	const signupsDatabase = await getDatabase('signup');
 	const signupnewDatabase = await getDatabase('signupnew');
-	return { usersDatabase, signupsDatabase,signupnewDatabase };
+	return { usersDatabase, signupsDatabase, signupnewDatabase };
 };
